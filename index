@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>住院候床問卷</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 15px;
+    background: #f3f6f9;
+    font-family: "Microsoft JhengHei", Arial, sans-serif;
+    color: #222;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+h2 {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+}
+
+.section {
+    margin-top: 25px;
+    padding-top: 18px;
+    border-top: 1px solid #ddd;
+}
+
+.question {
+    margin-top: 20px;
+}
+
+.question-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 18px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    background: white;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.radio-item {
+    flex: 1;
+    min-width: 120px;
+}
+
+.radio-item label {
+    display: block;
+    padding: 12px;
+    border: 1px solid #bbb;
+    border-radius: 9px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.radio-item input {
+    margin-right: 6px;
+}
+
+.preference-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.room-name {
+    font-size: 17px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.price-table-wrap {
+    margin-top: 14px;
+    overflow-x: auto;
+}
+
+.price-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+    background: #fff;
+}
+
+.price-table th,
+.price-table td {
+    border: 1px solid #d7d7d7;
+    padding: 11px 10px;
+    text-align: left;
+}
+
+.price-table th {
+    background: #f3f6f9;
+    font-weight: bold;
+}
+
+.price-table td:last-child {
+    white-space: nowrap;
+}
+
+button {
+    width: 100%;
+    margin-top: 30px;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    background: #1976d2;
+    color: white;
+    cursor: pointer;
+}
+
+button:active {
+    background: #125da5;
+}
+
+#result {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+}
+
+
+#resultText {
+    text-align: left;
+    background: #f3f3f3;
+    padding: 16px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 18px;
+    line-height: 1.8;
+    margin-top: 16px;
+}
+
+.notice {
+    color: #666;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+@media(max-width: 480px) {
+    .container {
+        padding: 16px;
+    }
+
+    .preference-row {
+        grid-template-columns: 1fr 100px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2 id="title">住院候床問卷</h2>
+
+<div class="question">
+    <div class="question-title" id="languageLabel">請選擇語言</div>
+    <select id="language">
+        <option value="zh">繁體中文</option>
+        <option value="en">English</option>
+        <option value="id">Bahasa Indonesia</option>
+        <option value="vi">Tiếng Việt</option>
+        <option value="th">ไทย</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+    </select>
+</div>
+
+<div class="question">
+    <div class="question-title" id="nameLabel">病人姓名</div>
+    <input type="text" id="patientName" placeholder="請輸入病人姓名">
+</div>
+
+<div class="question">
+    <div class="question-title" id="identityLabel">病人身分</div>
+    <div class="notice" id="identityNotice">請確認病人是否擁有健保卡：如擁有健保卡，請選擇「健保身分」；如無健保卡，請選擇「自費身分」。</div>
+
+    <div class="radio-group">
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="identity" value="健保">
+                <span id="insuranceText">健保身分</span>
+            </label>
+        </div>
+
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="identity" value="自費">
+                <span id="selfPayText">自費身分</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+
+<div class="question">
+    <div class="question-title" id="q1Text">1. 是否同意公布姓名？</div>
+    <div class="notice" id="q1Notice">若同意，訪客可向櫃台查詢病人的病房號。</div>
+
+    <div class="radio-group">
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="q1" value="是">
+                <span class="yesText">是</span>
+            </label>
+        </div>
+
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="q1" value="否">
+                <span class="noText">否</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+
+<div class="question" id="healthCardQuestion">
+    <div class="question-title" id="q3Text">2. 健保卡是否同意放在醫院？</div>
+    <div class="notice" id="q3Notice">※ 如果沒有帶健保卡，請選擇「否」。</div>
+
+    <div class="radio-group">
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="q3" value="是">
+                <span class="yesText">是</span>
+            </label>
+        </div>
+
+        <div class="radio-item">
+            <label>
+                <input type="radio" name="q3" value="否">
+                <span class="noText">否</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<div class="section" id="selfPayPriceSection" style="display:none;">
+    <div class="question">
+        <div class="question-title" id="priceTableTitle">自費價格</div>
+
+        <div class="price-table-wrap">
+            <table class="price-table" aria-label="加護病房自費價格">
+                <tbody>
+                    <tr>
+                        <td id="icuPriceName">加護病房</td>
+                        <td id="icuPriceValue">8212元/天</td>
+                    </tr>
+                    <tr>
+                        <td id="isolationPriceName">隔離病房</td>
+                        <td id="isolationPriceValue">5089元/天</td>
+                    </tr>
+                    <tr>
+                        <td id="nurseryPriceName">病嬰室</td>
+                        <td id="nurseryPriceValue">4343元/天</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-title" id="priceConfirmText">價格確認</div>
+        <div class="notice" id="priceConfirmNotice">
+            我已確認上述自費價格，皆為我可以接受的費用。
+        </div>
+
+        <div class="radio-group" style="margin-top:12px;">
+            <div class="radio-item">
+                <label>
+                    <input type="radio" name="priceConfirm" value="是">
+                    <span id="priceConfirmYesText">我同意並確認</span>
+                </label>
+            </div>
+
+            <div class="radio-item">
+                <label>
+                    <input type="radio" name="priceConfirm" value="否">
+                    <span id="priceConfirmNoText">我尚未確認</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button id="generateButton">完成問卷並顯示結果</button>
+
+<div id="result">
+    <h2 id="completeTitle">問卷完成</h2>
+
+    <div id="completeNotice">
+        請家屬將下方問卷結果拿給櫃檯人員查看。
+    </div>
+
+    <div id="resultText"></div>
+</div>
+
+</div>
+
+<script>
+function getRadio(name) {
+    const item = document.querySelector('input[name="' + name + '"]:checked');
+    return item ? item.value : "";
+}
+
+document.querySelectorAll(".selfpay-pref").forEach(function(select) {
+    select.addEventListener("change", function() {
+        updatePreferenceChoices(".selfpay-pref");
+    });
+});
+
+function updateHealthCardQuestion() {
+    const identity = getRadio("identity");
+    const q3Box = document.getElementById("healthCardQuestion");
+    const selfPayPriceSection = document.getElementById("selfPayPriceSection");
+
+    if (identity === "自費") {
+        // 自費身分：不顯示問題2（健保卡是否同意放在醫院）。
+        q3Box.style.display = "none";
+        document.querySelectorAll('input[name="q3"]').forEach(function(r) {
+            r.checked = false;
+        });
+        selfPayPriceSection.style.display = "block";
+    } else {
+        // 健保身分或尚未選擇身分：顯示問題2。
+        q3Box.style.display = "block";
+        selfPayPriceSection.style.display = "none";
+
+        document.querySelectorAll('input[name="priceConfirm"]').forEach(function(r) {
+            r.checked = false;
+        });
+    }
+}
+
+document.querySelectorAll('input[name="identity"]').forEach(function(radio) {
+    radio.addEventListener("change", updateHealthCardQuestion);
+});
+
+document.getElementById("generateButton").addEventListener("click", function() {
+    const name = document.getElementById("patientName").value.trim();
+    const identity = getRadio("identity");
+    const q1 = getRadio("q1");
+    let q3 = getRadio("q3");
+
+    const currentLanguage = document.getElementById("language").value;
+    const currentTranslation = translations[currentLanguage] || translations.zh;
+    const priceConfirm = getRadio("priceConfirm");
+
+    if (name === "") {
+        alert(currentTranslation.alerts.name);
+        return;
+    }
+
+    if (identity === "") {
+        alert(currentTranslation.alerts.identity);
+        return;
+    }
+
+    if (q1 === "") {
+        alert(currentTranslation.alerts.q1);
+        return;
+    }
+
+    if (identity !== "自費" && q3 === "") {
+        alert(currentTranslation.alerts.q3);
+        return;
+    }
+
+    // 自費身分仍需選擇價格確認狀態，但「尚未確認」也可以顯示結果。
+    if (identity === "自費" && priceConfirm === "") {
+        alert(currentTranslation.priceConfirmAlert);
+        return;
+    }
+
+    const resultData =
+        "病人姓名：" + name + "\n" +
+        "病人身分：" + identity + "\n" +
+        "是否同意公布姓名：" + q1 +
+        (identity === "自費"
+            ? "\n\n自費價格：\n" +
+              "加護病房：8212元/天\n" +
+              "隔離病房：5089元/天\n" +
+              "病嬰室：4343元/天\n" +
+              "價格確認：" + (priceConfirm === "是" ? "已同意並確認" : "尚未確認")
+            : "\n健保卡是否同意放在醫院：" + q3);
+
+    document.getElementById("resultText").textContent = resultData;
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth"
+    });
+});
+
+const translations = {
+    zh: {
+        title: "住院候床問卷",
+        language: "請選擇語言",
+        name: "病人姓名",
+        placeholder: "請輸入病人姓名",
+        identity: "病人身分",
+        identityNotice: "請確認病人是否擁有健保卡：如擁有健保卡，請選擇「健保身分」；如無健保卡，請選擇「自費身分」。",
+        insurance: "健保身分",
+        selfPay: "自費身分",
+        q1: "1. 是否同意公布姓名？",
+        q1Notice: "若同意，訪客可向櫃台查詢病人的病房號。",
+        q3: "2. 健保卡是否同意放在醫院？",
+        q3Notice: "※ 如果沒有帶健保卡，請選擇「否」。",
+        yes: "是",
+        no: "否",
+        priceTableTitle: "自費價格",
+        icuRoom: "加護病房",
+        icuPrice: "8212元/天",
+        isolationRoom: "隔離病房",
+        isolationPrice: "5089元/天",
+        nurseryRoom: "病嬰室",
+        nurseryPrice: "4343元/天",
+        button: "完成問卷並顯示結果",
+        completeTitle: "問卷完成",
+        completeNotice: "請家屬將下方問卷結果拿給櫃檯人員查看。",
+        priceConfirmTitle: "價格確認",
+        priceConfirmNotice: "我已確認上述自費價格，皆為我可以接受的費用。",
+        priceConfirmYes: "我同意並確認",
+        priceConfirmNo: "我尚未確認",
+        priceConfirmAlert: "請選擇「我同意並確認」或「我尚未確認」。",
+        alerts: {
+            name: "請輸入病人姓名",
+            identity: "請選擇健保身分或自費身分",
+            q1: "請回答問題1",
+            q3: "請回答問題2"
+        }
+    },
+
+    en: {
+        title: "Hospital Admission Waiting Questionnaire",
+        language: "Language",
+        name: "Patient Name",
+        placeholder: "Enter patient name",
+        identity: "Payment / Insurance Status",
+        identityNotice: "Please confirm whether the patient has a National Health Insurance (NHI) card. If the patient has an NHI card, select “National Health Insurance”; if not, select “Self-pay”.",
+        insurance: "National Health Insurance",
+        selfPay: "Self-pay",
+        q1: "1. Do you agree to disclose the patient's name?",
+        q1Notice: "If you agree, visitors may ask the counter staff for the patient's room number.",
+        q3: "2. Do you agree to leave the NHI card at the hospital?",
+        q3Notice: "※ If you did not bring the NHI card, please select “No”.",
+        yes: "Yes",
+        no: "No",
+        priceTableTitle: "Self-pay Prices",
+        icuRoom: "Intensive Care Unit",
+        icuPrice: "NT$8,212/day",
+        isolationRoom: "Isolation Room",
+        isolationPrice: "NT$5,089/day",
+        nurseryRoom: "Nursery",
+        nurseryPrice: "NT$4,343/day",
+        button: "Complete Questionnaire and Show Results",
+        completeTitle: "Completed",
+        completeNotice: "Please show the questionnaire result below to the counter staff.",
+        priceConfirmTitle: "Price Confirmation",
+        priceConfirmNotice: "I have reviewed the self-pay prices above and confirm that all of these charges are acceptable to me.",
+        priceConfirmYes: "I agree and confirm",
+        priceConfirmNo: "I have not confirmed yet",
+        priceConfirmAlert: "Please select either “I agree and confirm” or “I have not confirmed yet”.",
+        alerts: {
+            name: "Please enter the patient name.",
+            identity: "Please select NHI or self-pay status.",
+            q1: "Please answer Question 1.",
+            q3: "Please answer Question 2."
+        }
+    },
+
+    id: {
+        title: "Kuesioner Menunggu Rawat Inap",
+        language: "Pilih bahasa",
+        name: "Nama pasien",
+        placeholder: "Masukkan nama pasien",
+        identity: "Status pembayaran / asuransi",
+        identityNotice: "Harap pastikan apakah pasien memiliki kartu Asuransi Kesehatan Nasional. Jika pasien memiliki kartu tersebut, pilih “Asuransi Kesehatan Nasional”; jika tidak, pilih “Biaya sendiri”.",
+        insurance: "Asuransi Kesehatan Nasional",
+        selfPay: "Biaya sendiri",
+        q1: "1. Apakah Anda setuju nama pasien diumumkan?",
+        q1Notice: "Jika setuju, pengunjung dapat menanyakan nomor kamar pasien kepada petugas loket.",
+        q3: "2. Apakah Anda setuju kartu asuransi kesehatan dititipkan di rumah sakit?",
+        q3Notice: "※ Jika Anda tidak membawa kartu Asuransi Kesehatan Nasional, silakan pilih “Tidak”.",
+        yes: "Ya",
+        no: "Tidak",
+        priceTableTitle: "Biaya pasien mandiri",
+        icuRoom: "Unit Perawatan Intensif",
+        icuPrice: "NT$8.212/hari",
+        isolationRoom: "Kamar isolasi",
+        isolationPrice: "NT$5.089/hari",
+        nurseryRoom: "Ruang bayi",
+        nurseryPrice: "NT$4.343/hari",
+        button: "Selesaikan kuesioner dan tampilkan hasil",
+        completeTitle: "Kuesioner selesai",
+        completeNotice: "Tunjukkan hasil kuesioner di bawah ini kepada petugas loket.",
+        priceConfirmTitle: "Konfirmasi Harga",
+        priceConfirmNotice: "Saya telah memeriksa biaya mandiri di atas dan menyatakan bahwa semua biaya tersebut dapat saya terima.",
+        priceConfirmYes: "Saya setuju dan mengonfirmasi",
+        priceConfirmNo: "Saya belum mengonfirmasi",
+        priceConfirmAlert: "Silakan pilih “Saya setuju dan mengonfirmasi” atau “Saya belum mengonfirmasi”.",
+        alerts: {
+            name: "Masukkan nama pasien.",
+            identity: "Pilih status asuransi atau biaya sendiri.",
+            q1: "Jawab pertanyaan 1.",
+            q3: "Jawab pertanyaan 2."
+        }
+    },
+
+    vi: {
+        title: "Phiếu khảo sát chờ giường nhập viện",
+        language: "Chọn ngôn ngữ",
+        name: "Tên bệnh nhân",
+        placeholder: "Nhập tên bệnh nhân",
+        identity: "Tình trạng bảo hiểm / tự phí",
+        identityNotice: "Vui lòng xác nhận bệnh nhân có thẻ Bảo hiểm Y tế hay không. Nếu có thẻ, hãy chọn “Bảo hiểm y tế”; nếu không có thẻ, hãy chọn “Tự phí”.",
+        insurance: "Bảo hiểm y tế",
+        selfPay: "Tự phí",
+        q1: "1. Bạn có đồng ý công khai tên bệnh nhân không?",
+        q1Notice: "Nếu đồng ý, khách thăm có thể hỏi nhân viên quầy về số phòng của bệnh nhân.",
+        q3: "2. Bạn có đồng ý để thẻ bảo hiểm y tế tại bệnh viện không?",
+        q3Notice: "※ Nếu không mang theo thẻ Bảo hiểm Y tế, vui lòng chọn “Không”.",
+        yes: "Có",
+        no: "Không",
+        priceTableTitle: "Giá tự phí",
+        icuRoom: "Phòng chăm sóc đặc biệt (ICU)",
+        icuPrice: "NT$8.212/ngày",
+        isolationRoom: "Phòng cách ly",
+        isolationPrice: "NT$5.089/ngày",
+        nurseryRoom: "Phòng trẻ sơ sinh",
+        nurseryPrice: "NT$4.343/ngày",
+        button: "Hoàn tất khảo sát và hiển thị kết quả",
+        completeTitle: "Đã hoàn tất",
+        completeNotice: "Vui lòng đưa kết quả khảo sát bên dưới cho nhân viên quầy xem.",
+        priceConfirmTitle: "Xác nhận mức giá",
+        priceConfirmNotice: "Tôi đã kiểm tra các mức giá tự phí ở trên và xác nhận rằng tất cả các chi phí này đều có thể chấp nhận được.",
+        priceConfirmYes: "Tôi đồng ý và xác nhận",
+        priceConfirmNo: "Tôi chưa xác nhận",
+        priceConfirmAlert: "Vui lòng chọn “Tôi đồng ý và xác nhận” hoặc “Tôi chưa xác nhận”.",
+        alerts: {
+            name: "Vui lòng nhập tên bệnh nhân.",
+            identity: "Vui lòng chọn BHYT hoặc tự phí.",
+            q1: "Vui lòng trả lời câu hỏi 1.",
+            q3: "Vui lòng trả lời câu hỏi 2."
+        }
+    },
+
+    th: {
+        title: "แบบสอบถามรอเตียงผู้ป่วยใน",
+        language: "กรุณาเลือกภาษา",
+        name: "ชื่อผู้ป่วย",
+        placeholder: "กรุณากรอกชื่อผู้ป่วย",
+        identity: "สิทธิประกัน / ชำระเงินเอง",
+        identityNotice: "กรุณาตรวจสอบว่าผู้ป่วยมีบัตรประกันสุขภาพแห่งชาติหรือไม่ หากมีบัตร ให้เลือก “สิทธิประกันสุขภาพ”; หากไม่มีบัตร ให้เลือก “ชำระเงินเอง”",
+        insurance: "สิทธิประกันสุขภาพ",
+        selfPay: "ชำระเงินเอง",
+        q1: "1. ยินยอมให้เปิดเผยชื่อผู้ป่วยหรือไม่?",
+        q1Notice: "หากยินยอม ผู้มาเยี่ยมสามารถสอบถามหมายเลขห้องของผู้ป่วยจากเจ้าหน้าที่เคาน์เตอร์ได้",
+        q3: "2. ยินยอมฝากบัตรประกันสุขภาพไว้ที่โรงพยาบาลหรือไม่?",
+        q3Notice: "※ หากไม่ได้พกบัตรประกันสุขภาพ กรุณาเลือก “ไม่”",
+        yes: "ใช่",
+        no: "ไม่",
+        priceTableTitle: "อัตราค่าบริการแบบชำระเงินเอง",
+        icuRoom: "หอผู้ป่วยวิกฤต",
+        icuPrice: "NT$8,212/วัน",
+        isolationRoom: "ห้องแยกโรค",
+        isolationPrice: "NT$5,089/วัน",
+        nurseryRoom: "ห้องทารก",
+        nurseryPrice: "NT$4,343/วัน",
+        button: "ทำแบบสอบถามเสร็จและแสดงผลลัพธ์",
+        completeTitle: "ทำแบบสอบถามเสร็จแล้ว",
+        completeNotice: "กรุณาแสดงผลแบบสอบถามด้านล่างให้เจ้าหน้าที่เคาน์เตอร์ดู",
+        priceConfirmTitle: "ยืนยันราคา",
+        priceConfirmNotice: "ฉันได้ตรวจสอบอัตราค่าบริการแบบชำระเงินเองข้างต้นแล้ว และยืนยันว่าสามารถยอมรับค่าใช้จ่ายทั้งหมดได้",
+        priceConfirmYes: "ฉันยอมรับและยืนยัน",
+        priceConfirmNo: "ฉันยังไม่ได้ยืนยัน",
+        priceConfirmAlert: "กรุณาเลือก “ฉันยอมรับและยืนยัน” หรือ “ฉันยังไม่ได้ยืนยัน”",
+        alerts: {
+            name: "กรุณากรอกชื่อผู้ป่วย",
+            identity: "กรุณาเลือกสิทธิประกันหรือชำระเงินเอง",
+            q1: "กรุณาตอบคำถามข้อ 1",
+            q3: "กรุณาตอบคำถามข้อ 2"
+        }
+    },
+
+    ja: {
+        title: "入院待床アンケート",
+        language: "言語を選択してください",
+        name: "患者氏名",
+        placeholder: "患者氏名を入力してください",
+        identity: "保険・支払い区分",
+        identityNotice: "患者が全民健康保険カードをお持ちかご確認ください。カードをお持ちの場合は「全民健康保険」、お持ちでない場合は「自費」を選択してください。",
+        insurance: "全民健康保険",
+        selfPay: "自費",
+        q1: "1. 患者氏名の公開に同意しますか？",
+        q1Notice: "同意した場合、面会者は窓口で患者の病室番号を問い合わせることができます。",
+        q3: "2. 健康保険カードを病院に預けることに同意しますか？",
+        q3Notice: "※ 健康保険カードを持参していない場合は「いいえ」を選択してください。",
+        yes: "はい",
+        no: "いいえ",
+        priceTableTitle: "自費料金",
+        icuRoom: "集中治療室",
+        icuPrice: "NT$8,212/日",
+        isolationRoom: "隔離病室",
+        isolationPrice: "NT$5,089/日",
+        nurseryRoom: "新生児室",
+        nurseryPrice: "NT$4,343/日",
+        button: "アンケートを完了して結果を表示",
+        completeTitle: "アンケート完了",
+        completeNotice: "下記のアンケート結果を窓口スタッフに提示してください。",
+        priceConfirmTitle: "料金確認",
+        priceConfirmNotice: "上記の自費料金を確認し、すべての費用を受け入れられることを確認しました。",
+        priceConfirmYes: "同意して確認します",
+        priceConfirmNo: "まだ確認していません",
+        priceConfirmAlert: "「同意して確認します」または「まだ確認していません」を選択してください。",
+        alerts: {
+            name: "患者氏名を入力してください。",
+            identity: "保険または自費を選択してください。",
+            q1: "質問1に回答してください。",
+            q3: "質問2に回答してください。"
+        }
+    },
+
+    ko: {
+        title: "입원 병상 대기 설문",
+        language: "언어를 선택하세요",
+        name: "환자 이름",
+        placeholder: "환자 이름을 입력하세요",
+        identity: "보험 / 본인부담 구분",
+        identityNotice: "환자가 국민건강보험 카드를 가지고 있는지 확인해 주세요. 카드가 있으면 “국민건강보험”, 없으면 “본인부담”을 선택해 주세요.",
+        insurance: "국민건강보험",
+        selfPay: "본인부담",
+        q1: "1. 환자 이름 공개에 동의하십니까?",
+        q1Notice: "동의하면 방문객이 안내 창구에서 환자의 병실 번호를 문의할 수 있습니다.",
+        q3: "2. 건강보험카드를 병원에 맡기는 것에 동의하십니까?",
+        q3Notice: "※ 건강보험카드를 가져오지 않은 경우 “아니요”를 선택해 주세요.",
+        yes: "예",
+        no: "아니요",
+        priceTableTitle: "본인부담 가격",
+        icuRoom: "중환자실",
+        icuPrice: "NT$8,212/일",
+        isolationRoom: "격리병실",
+        isolationPrice: "NT$5,089/일",
+        nurseryRoom: "신생아실",
+        nurseryPrice: "NT$4,343/일",
+        button: "설문 완료 및 결과 표시",
+        completeTitle: "설문 완료",
+        completeNotice: "아래 설문 결과를 창구 직원에게 보여 주세요.",
+        priceConfirmTitle: "가격 확인",
+        priceConfirmNotice: "위의 본인부담 가격을 확인했으며 모든 비용을 수용할 수 있음을 확인합니다.",
+        priceConfirmYes: "동의하고 확인합니다",
+        priceConfirmNo: "아직 확인하지 않았습니다",
+        priceConfirmAlert: "“동의하고 확인합니다” 또는 “아직 확인하지 않았습니다”를 선택해 주세요.",
+        alerts: {
+            name: "환자 이름을 입력하세요.",
+            identity: "보험 또는 본인부담을 선택하세요.",
+            q1: "질문 1에 답해 주세요.",
+            q3: "질문 2에 답해 주세요."
+        }
+    }
+};
+
+document.getElementById("language").addEventListener("change", function() {
+    const t = translations[this.value] || translations.zh;
+
+    document.getElementById("title").textContent = t.title;
+    document.getElementById("languageLabel").textContent = t.language;
+    document.getElementById("nameLabel").textContent = t.name;
+    document.getElementById("patientName").placeholder = t.placeholder;
+    document.getElementById("identityLabel").textContent = t.identity;
+    document.getElementById("identityNotice").textContent = t.identityNotice;
+    document.getElementById("insuranceText").textContent = t.insurance;
+    document.getElementById("selfPayText").textContent = t.selfPay;
+    document.getElementById("q1Text").textContent = t.q1;
+    document.getElementById("q1Notice").textContent = t.q1Notice;
+    document.getElementById("q3Text").textContent = t.q3;
+    document.getElementById("q3Notice").textContent = t.q3Notice;
+
+    document.querySelectorAll(".yesText").forEach(function(item) {
+        item.textContent = t.yes;
+    });
+
+    document.querySelectorAll(".noText").forEach(function(item) {
+        item.textContent = t.no;
+    });
+
+    document.getElementById("priceTableTitle").textContent = t.priceTableTitle;
+    document.getElementById("icuPriceName").textContent = t.icuRoom;
+    document.getElementById("icuPriceValue").textContent = t.icuPrice;
+    document.getElementById("isolationPriceName").textContent = t.isolationRoom;
+    document.getElementById("isolationPriceValue").textContent = t.isolationPrice;
+    document.getElementById("nurseryPriceName").textContent = t.nurseryRoom;
+    document.getElementById("nurseryPriceValue").textContent = t.nurseryPrice;
+
+    document.getElementById("generateButton").textContent = t.button;
+    document.getElementById("completeTitle").textContent = t.completeTitle;
+    document.getElementById("completeNotice").textContent = t.completeNotice;
+
+    document.getElementById("priceConfirmText").textContent = t.priceConfirmTitle;
+    document.getElementById("priceConfirmNotice").textContent = t.priceConfirmNotice;
+    document.getElementById("priceConfirmYesText").textContent = t.priceConfirmYes;
+    document.getElementById("priceConfirmNoText").textContent = t.priceConfirmNo;
+});
+
+// 開啟網頁時，自動依照手機 / 瀏覽器語系選擇語言
+(function autoSelectLanguage() {
+    const languageSelect = document.getElementById("language");
+
+    // 優先使用瀏覽器提供的第一語言
+    const browserLanguage =
+        (navigator.languages && navigator.languages.length
+            ? navigator.languages[0]
+            : navigator.language || navigator.userLanguage || "zh"
+        ).toLowerCase();
+
+    let selectedLanguage = "en";
+
+    if (browserLanguage.startsWith("zh")) {
+        selectedLanguage = "zh";
+    } else if (browserLanguage.startsWith("en")) {
+        selectedLanguage = "en";
+    } else if (browserLanguage.startsWith("id")) {
+        selectedLanguage = "id";
+    } else if (browserLanguage.startsWith("vi")) {
+        selectedLanguage = "vi";
+    } else if (browserLanguage.startsWith("th")) {
+        selectedLanguage = "th";
+    } else if (browserLanguage.startsWith("ja")) {
+        selectedLanguage = "ja";
+    } else if (browserLanguage.startsWith("ko")) {
+        selectedLanguage = "ko";
+    }
+
+    languageSelect.value = selectedLanguage;
+
+    // 觸發既有的 change 事件，讓整份問卷立即套用翻譯
+    languageSelect.dispatchEvent(new Event("change"));
+})();
+
+</script>
+
+</body>
+</html>
