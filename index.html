@@ -742,34 +742,39 @@ document.getElementById("language").addEventListener("change", function() {
 (function autoSelectLanguage() {
     const languageSelect = document.getElementById("language");
 
-    // 優先使用瀏覽器提供的第一語言
-    const browserLanguage =
-        (navigator.languages && navigator.languages.length
-            ? navigator.languages[0]
-            : navigator.language || navigator.userLanguage || "zh"
-        ).toLowerCase();
+    // 取得瀏覽器所有語言，依照優先順序排列
+    const browserLanguages =
+        navigator.languages && navigator.languages.length
+            ? navigator.languages
+            : [navigator.language || navigator.userLanguage || "en"];
 
+    // 預設英文
     let selectedLanguage = "en";
 
-    if (browserLanguage.startsWith("zh")) {
-        selectedLanguage = "zh";
-    } else if (browserLanguage.startsWith("en")) {
-        selectedLanguage = "en";
-    } else if (browserLanguage.startsWith("id")) {
-        selectedLanguage = "id";
-    } else if (browserLanguage.startsWith("vi")) {
-        selectedLanguage = "vi";
-    } else if (browserLanguage.startsWith("th")) {
-        selectedLanguage = "th";
-    } else if (browserLanguage.startsWith("ja")) {
-        selectedLanguage = "ja";
-    } else if (browserLanguage.startsWith("ko")) {
-        selectedLanguage = "ko";
+    // 網頁支援的語言
+    const supportedLanguages = [
+        "zh",
+        "en",
+        "id",
+        "vi",
+        "th",
+        "ja",
+        "ko"
+    ];
+
+    // 依照瀏覽器語言優先順序尋找支援的語言
+    for (const lang of browserLanguages) {
+        const languageCode = lang.toLowerCase().split("-")[0];
+
+        if (supportedLanguages.includes(languageCode)) {
+            selectedLanguage = languageCode;
+            break;
+        }
     }
 
     languageSelect.value = selectedLanguage;
 
-    // 觸發既有的 change 事件，讓整份問卷立即套用翻譯
+    // 觸發既有的語言切換功能
     languageSelect.dispatchEvent(new Event("change"));
 })();
 
