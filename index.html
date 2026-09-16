@@ -283,14 +283,13 @@ button:active {
                         <td id="icuPriceValue">9712元/天</td>
                     </tr>
                     <tr>
-                        <td id="isolationPriceName">隔離病房</td>
-                        <td id="isolationPriceValue">6016元/天</td>
-                    </tr>
-                    <tr>
                         <td id="pediatricIcuPriceName">小兒加護病房</td>
                         <td id="pediatricIcuPriceValue">9712元/天</td>
                     </tr>
-
+                    <tr>
+                        <td id="isolationPriceName">隔離病房</td>
+                        <td id="isolationPriceValue">6016元/天</td>
+                    </tr>
                     <tr>
                         <td id="nurseryPriceName">病嬰室</td>
                         <td id="nurseryPriceValue">5084元/天</td>
@@ -420,8 +419,8 @@ document.getElementById("generateButton").addEventListener("click", function() {
         (identity === "自費"
             ? "\n\n自費價格：\n" +
               "加護病房：9712元/天\n" +
-              "隔離病房：6016元/天\n" +
               "小兒加護病房：9712元/天\n" +
+              "隔離病房：6016元/天\n" +
               "病嬰室：5084元/天\n" +
               "價格確認：" + (priceConfirm === "是" ? "已同意並確認" : "尚未確認")
             : "\n健保卡是否同意放在醫院：" + q3);
@@ -453,10 +452,10 @@ const translations = {
         priceTableTitle: "自費價格",
         icuRoom: "加護病房",
         icuPrice: "9712元/天",
-        isolationRoom: "隔離病房",
-        isolationPrice: "6016元/天",
         pediatricIcuRoom: "小兒加護病房",
         pediatricIcuPrice: "9712元/天",
+        isolationRoom: "隔離病房",
+        isolationPrice: "6016元/天",
         nurseryRoom: "病嬰室",
         nurseryPrice: "5084元/天",
         button: "完成問卷並顯示結果",
@@ -493,6 +492,8 @@ const translations = {
         priceTableTitle: "Self-pay Prices",
         icuRoom: "Intensive Care Unit",
         icuPrice: "NT$8,212/day",
+        pediatricIcuRoom: "Pediatric Intensive Care Unit",
+        pediatricIcuPrice: "NT$9,712/day",
         isolationRoom: "Isolation Room",
         isolationPrice: "NT$5,089/day",
         nurseryRoom: "Nursery",
@@ -531,6 +532,8 @@ const translations = {
         priceTableTitle: "Biaya pasien mandiri",
         icuRoom: "Unit Perawatan Intensif",
         icuPrice: "NT$8.212/hari",
+        pediatricIcuRoom: "Unit Perawatan Intensif Anak",
+        pediatricIcuPrice: "NT$9.712/hari",
         isolationRoom: "Kamar isolasi",
         isolationPrice: "NT$5.089/hari",
         nurseryRoom: "Ruang bayi",
@@ -569,6 +572,8 @@ const translations = {
         priceTableTitle: "Giá tự phí",
         icuRoom: "Phòng chăm sóc đặc biệt (ICU)",
         icuPrice: "NT$8.212/ngày",
+        pediatricIcuRoom: "Phòng chăm sóc đặc biệt nhi khoa (PICU)",
+        pediatricIcuPrice: "NT$9.712/ngày",
         isolationRoom: "Phòng cách ly",
         isolationPrice: "NT$5.089/ngày",
         nurseryRoom: "Phòng trẻ sơ sinh",
@@ -607,6 +612,8 @@ const translations = {
         priceTableTitle: "อัตราค่าบริการแบบชำระเงินเอง",
         icuRoom: "หอผู้ป่วยวิกฤต",
         icuPrice: "NT$8,212/วัน",
+        pediatricIcuRoom: "หอผู้ป่วยวิกฤตเด็ก",
+        pediatricIcuPrice: "NT$9,712/วัน",
         isolationRoom: "ห้องแยกโรค",
         isolationPrice: "NT$5,089/วัน",
         nurseryRoom: "ห้องทารก",
@@ -645,6 +652,8 @@ const translations = {
         priceTableTitle: "自費料金",
         icuRoom: "集中治療室",
         icuPrice: "NT$8,212/日",
+        pediatricIcuRoom: "小児集中治療室",
+        pediatricIcuPrice: "NT$9,712/日",
         isolationRoom: "隔離病室",
         isolationPrice: "NT$5,089/日",
         nurseryRoom: "新生児室",
@@ -683,6 +692,8 @@ const translations = {
         priceTableTitle: "본인부담 가격",
         icuRoom: "중환자실",
         icuPrice: "NT$8,212/일",
+        pediatricIcuRoom: "소아중환자실",
+        pediatricIcuPrice: "NT$9,712/일",
         isolationRoom: "격리병실",
         isolationPrice: "NT$5,089/일",
         nurseryRoom: "신생아실",
@@ -731,6 +742,8 @@ document.getElementById("language").addEventListener("change", function() {
     document.getElementById("priceTableTitle").textContent = t.priceTableTitle;
     document.getElementById("icuPriceName").textContent = t.icuRoom;
     document.getElementById("icuPriceValue").textContent = t.icuPrice;
+    document.getElementById("pediatricIcuPriceName").textContent = t.pediatricIcuRoom;
+    document.getElementById("pediatricIcuPriceValue").textContent = t.pediatricIcuPrice;
     document.getElementById("isolationPriceName").textContent = t.isolationRoom;
     document.getElementById("isolationPriceValue").textContent = t.isolationPrice;
     document.getElementById("nurseryPriceName").textContent = t.nurseryRoom;
