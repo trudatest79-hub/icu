@@ -287,6 +287,11 @@ button:active {
                         <td id="isolationPriceValue">6016元/天</td>
                     </tr>
                     <tr>
+                        <td id="pediatricIcuPriceName">小兒加護病房</td>
+                        <td id="pediatricIcuPriceValue">9712元/天</td>
+                    </tr>
+
+                    <tr>
                         <td id="nurseryPriceName">病嬰室</td>
                         <td id="nurseryPriceValue">5084元/天</td>
                     </tr>
@@ -416,6 +421,7 @@ document.getElementById("generateButton").addEventListener("click", function() {
             ? "\n\n自費價格：\n" +
               "加護病房：9712元/天\n" +
               "隔離病房：6016元/天\n" +
+              "小兒加護病房：9712元/天\n" +
               "病嬰室：5084元/天\n" +
               "價格確認：" + (priceConfirm === "是" ? "已同意並確認" : "尚未確認")
             : "\n健保卡是否同意放在醫院：" + q3);
@@ -449,6 +455,8 @@ const translations = {
         icuPrice: "9712元/天",
         isolationRoom: "隔離病房",
         isolationPrice: "6016元/天",
+        pediatricIcuRoom: "小兒加護病房",
+        pediatricIcuPrice: "9712元/天",
         nurseryRoom: "病嬰室",
         nurseryPrice: "5084元/天",
         button: "完成問卷並顯示結果",
